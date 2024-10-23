@@ -6,6 +6,7 @@ const _vocabulary = {
   schema: {},
   data: {},
   randomStrings: {},
+  finalEvents: {},
   cases: null,
   events: null
 };
@@ -22,6 +23,10 @@ function processVocabulary() {
       _vocabulary.schema = items["__schema__"];
       continue;
     }
+    else if (key === "__final_events__")  {
+      _vocabulary.finalEvents = items["__final_events__"];
+      continue;
+    }
 
     const transitions = items[key];
     const parsedTransitions = [];
@@ -33,9 +38,6 @@ function processVocabulary() {
 
     randomizeWithWeights(key, parsedTransitions);
   }
-
-  _vocabulary.initialEvent = getRandomString("__initial_event__");
-  _vocabulary.finalEvent = getRandomString("__final_event__");
 
   parseSchema(items["__schema__"]);
 
@@ -85,27 +87,53 @@ function randomizeWithWeights(key, stringsWithWeights) {
   };
 }
 
-function getRandomString(key) {
-  key = key.toLowerCase();
-  if (!_vocabulary.randomStrings[key]) {
-    if (key === _vocabulary.finalEvent) {
-      return _vocabulary.finalEvent;
-    }
+function getRandomString(key, values=null) {
+  if (!_vocabulary.randomStrings[key.toLowerCase()]) {
     throw new Error(
       `Missing key: "${key}". Please ensure that your configuration of attributes and events contains an entry for "${key}"`
     );
   }
 
+  let randomStrings;
+  if (values) {
+    const items = parseVocabulary()[key];
+
+    const filteredValues = values.filter(value => items.hasOwnProperty(value));
+    if (filteredValues.length === 0) {
+      throw new Error(
+        `None of the values in [${values.join(', ')}] are defined as valid next hops from "${key}".`
+      );
+    }
+    const filteredWeights = filteredValues.map(value => items[value]);
+
+    const cumulativeWeights = [];
+    let total = 0;
+
+    filteredWeights.forEach(weight => {
+      total += weight;
+      cumulativeWeights.push(total);
+    });
+
+    const normalizedCumulativeWeights = cumulativeWeights.map(cw => cw / total);
+
+    randomStrings = {
+      weight: normalizedCumulativeWeights,
+      values: filteredValues
+    }
+  } else {
+    randomStrings = _vocabulary.randomStrings[key.toLowerCase()];
+  }
+
   const randomNum = Math.random();
-  const index = _vocabulary.randomStrings[key].weight.findIndex(
+  const index = randomStrings.weight.findIndex(
     (cp) => randomNum <= cp
   );
 
   if (index === -1) {
-    return _vocabulary.randomStrings[key].values[0];
+    return randomStrings.values[0];
   }
 
-  return _vocabulary.randomStrings[key].values[index];
+  return randomStrings.values[index];
 }
 
 function parseVocabulary() {

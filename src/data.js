@@ -34,8 +34,6 @@ function generateCases(numCases) {
 }
 
 function generateEvents(cases) {
-  const initialEvent = getVocabulary().initialEvent;
-  const finalEvent = getVocabulary().finalEvent;
   const transitions = [];
   const numCases = cases.length;
 
@@ -52,6 +50,8 @@ function generateEvents(cases) {
     const startDate = faker.date.past({ years: config.TIMEFRAME_IN_YEARS });
     let currentDate = moment(startDate);
 
+    const initialEvent = getRandomString("__initial_event__");
+
     let eventName,
       previousEvent;
 
@@ -60,7 +60,7 @@ function generateEvents(cases) {
       if (i === 0) {
         eventName = initialEvent;
       } else if (i === numTransitions - 1) {
-        eventName = finalEvent;
+        eventName = getRandomString(previousEvent, Object.keys(vocabulary.finalEvents));
       } else {
         eventName = getRandomString(previousEvent);
       }
@@ -87,7 +87,7 @@ function generateEvents(cases) {
 
       transitions.push(event);
 
-      if (eventName === finalEvent) break;
+      if (eventName in vocabulary.finalEvents) break;
 
       currentDate.add({
         days: faker.number.int({
