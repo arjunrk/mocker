@@ -125,7 +125,6 @@ function getRandomString(key, values=null) {
   } else {
     randomStrings = _vocabulary.randomStrings[key.toLowerCase()];
   }
-
   const randomNum = Math.random();
   const index = randomStrings.weight.findIndex(
     (cp) => randomNum <= cp

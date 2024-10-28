@@ -21,7 +21,8 @@ const config = {
   UNIQUE_VALUES_FOR_DYNAMIC_ATTRS: 10,
   MAX_VARIANTS: -1,
   MAX_SEQUENCES: -1,
-  SHOW_SUMMARY: true
+  SHOW_SUMMARY: true,
+  ENABLE_EASTER_EGGS: true
 };
 
 const ArgumentTypes = {
@@ -81,6 +82,7 @@ const configDefinitions = [
   new ConfigDefinition("MAX_VARIANTS", "-maxvariants", ArgumentTypes.FLOAT, "Maximum number of unique variants."),
   new ConfigDefinition("MAX_SEQUENCES", "-maxsequences", ArgumentTypes.FLOAT, "Maximum number of unique event sequences."),
   new ConfigDefinition("SHOW_SUMMARY", "-summary", ArgumentTypes.BOOLEAN, "Display data summary on the console."),
+  new ConfigDefinition("ENABLE_EASTER_EGGS", "-eastereggs", ArgumentTypes.BOOLEAN, "Enable/Disable easter egg patterns for process mining testing."),
 ]
 
 function loadAndSetUserConfigurations() {
@@ -109,7 +111,7 @@ function loadAndSetUserConfigurations() {
 function printHelp() {
   console.log("\nUsage:");
   console.log(
-    `node app.js ${configDefinitions.reduce((accstr, defn) => { return accstr + defn.argumentName + " [value] " }, "")}\n`
+    `node src/mocker.js ${configDefinitions.reduce((accstr, defn) => { return accstr + defn.argumentName + " [value] " }, "")}\n`
   );
   configDefinitions.forEach(defn => { defn.printHelpMessage() });
   console.log("\n");

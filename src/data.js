@@ -210,5 +210,4 @@ function getStartDate(currentCase, totalCases) {
     return faker.date.past({ years: config.TIMEFRAME_IN_YEARS });
   }
 }
-
 module.exports = { generateCases, generateEvents };
