@@ -292,243 +292,275 @@
         "Abandoned": 0.0
     },
     "Activity1": {
-        "Code Complete": 0.154108,
-        "Activity4": 0.269452,
-        "Bug Fix": 0.292103,
-        "Bounced": 0.284338
+        "Code Complete": 0.146769,
+        "Activity4": 0.256621,
+        "Bug Fix": 0.278193,
+        "Bounced": 0.270798,
+        "Abandoned": 0.047619
     },
     "Activity2": {
-        "Activity5": 0.342449,
-        "Pairing": 0.375967,
-        "Deferred": 0.281584
+        "Activity6": 0.212952,
+        "Retrospective": 0.141974,
+        "Invalid": 0.345615,
+        "Code Review": 0.299459
     },
     "Activity3": {
-        "Feature Complete": 0.36151,
-        "Pairing": 0.322298,
-        "Activity5": 0.316192
+        "PO Review": 0.317364,
+        "Ready for Deployment": 0.428336,
+        "Activity5": 0.2543,
+        "Merged": 0.05
     },
     "Activity4": {
-        "Blocked": 0.344381,
-        "Sprint Planning": 0.286818,
-        "Release Candidate": 0.368801
+        "Closed": 0.28671,
+        "Ready for Merge": 0.181122,
+        "Activity7": 0.240806,
+        "PO Review": 0.291362
     },
     "Activity5": {
-        "Activity6": 0.461121,
-        "Release Candidate": 0.267455,
-        "Ready for Merge": 0.271424
+        "Activity1": 0.231711,
+        "PO Review": 0.308841,
+        "Blocked": 0.157859,
+        "Under Code Review": 0.301589,
+        "Closed": 0.05
     },
     "Activity6": {
-        "Bounced": 0.269918,
-        "Production": 0.222819,
-        "Code Complete": 0.135668,
-        "Activity5": 0.139204,
-        "Feature Complete": 0.232391
+        "Ready for Deployment": 0.142561,
+        "Submitted": 0.208696,
+        "Merged": 0.188371,
+        "Post-Release": 0.168327,
+        "Activity2": 0.292045
     },
     "Activity7": {
-        "Activity6": 0.221725,
-        "Sprint Backlog": 0.185979,
-        "Bounced": 0.236686,
-        "Patch": 0.35561
+        "Retrospective": 0.262628,
+        "Ready for Work": 0.158809,
+        "Abandoned": 0.124684,
+        "Post-Release": 0.209113,
+        "Paused": 0.244765
     },
     "Activity8": {
-        "Production": 0.135963,
-        "Deployment": 0.231356,
-        "QE Review": 0.331061,
-        "Bounced": 0.301621
+        "Activity9": 0.151874,
+        "Parked": 0.169958,
+        "Activity1": 0.204254,
+        "Submitted": 0.175325,
+        "UAT": 0.29859,
+        "Duplicated": 0.05
     },
     "Activity9": {
-        "In Staging": 0.419663,
-        "Activity5": 0.314561,
-        "Under Code Review": 0.265776
+        "Ready for QA": 0.185237,
+        "Feature Complete": 0.283063,
+        "Production": 0.259653,
+        "Paused": 0.272047,
+        "Abandoned": 0.05
     },
     "Backlog": {
-        "Bug Fix": 0.159584,
-        "PO Review": 0.275772,
-        "Paused": 0.19623,
-        "UAT": 0.368414
+        "Ready for Merge": 0.221695,
+        "Duplicated": 0.24261,
+        "Sprint Review": 0.114503,
+        "Ready for Production": 0.231921,
+        "Bounced": 0.189271
     },
     "Blocked": {
-        "Production": 0.413853,
-        "Post-Release": 0.268337,
-        "Pairing": 0.31781
+        "Activity4": 0.122007,
+        "UAT": 0.294544,
+        "Activity2": 0.118646,
+        "PO Review": 0.277525,
+        "Feature Complete": 0.187278,
+        "Duplicated": 0.05
     },
     "Bounced": {
-        "Ready for Merge": 0.266203,
-        "Feature Complete": 0.247806,
-        "Activity9": 0.151658,
-        "Activity8": 0.334333
+        "Parked": 0.241358,
+        "Sprint Planning": 0.226208,
+        "Ready for Work": 0.115409,
+        "PO Review": 0.249939,
+        "Backlog": 0.167086,
+        "Incorporated": 0.05
     },
     "Bug Fix": {
-        "Ready for Merge": 0.401884,
-        "Testing": 0.408465,
-        "Activity7": 0.189651
+        "Blocked": 0.284642,
+        "Patch": 0.152212,
+        "Merged": 0.289072,
+        "Sprint Planning": 0.274074
     },
     "Code Complete": {
-        "Ready for QA": 0.144832,
-        "Bug Fix": 0.378415,
-        "Ready for Production": 0.157997,
-        "Release Candidate": 0.18091,
-        "Activity2": 0.137845
+        "Under Code Review": 0.27996,
+        "Blocked": 0.221891,
+        "Invalid": 0.164439,
+        "Ready for QA": 0.333711
     },
     "Deferred": {
-        "Activity3": 0.263154,
-        "Bounced": 0.147997,
-        "Blocked": 0.170475,
-        "Under Code Review": 0.208241,
-        "Pairing": 0.210133
+        "Invalid": 0.132239,
+        "Bug Fix": 0.343547,
+        "Merged": 0.336713,
+        "Release Candidate": 0.187501
     },
     "Deployment": {
-        "Blocked": 0.116347,
-        "Testing": 0.246698,
-        "In Staging": 0.291865,
-        "Ready for QA": 0.216383,
-        "Post-Release": 0.128707
+        "Release Candidate": 0.23171,
+        "Testing": 0.191921,
+        "Released": 0.216514,
+        "Sprint Backlog": 0.132349,
+        "Ready for Deployment": 0.227506,
+        "Merged": 0.05
     },
     "Feature Complete": {
-        "Released": 0.551621,
-        "Submitted": 0.21135,
-        "Sprint Review": 0.237029
+        "Duplicated": 0.318569,
+        "Under Code Review": 0.255876,
+        "Activity8": 0.425555
     },
     "Hotfix": {
-        "Feature Complete": 0.181662,
-        "Sprint Review": 0.265378,
-        "Pairing": 0.119167,
-        "Backlog": 0.224038,
-        "In Staging": 0.209755
+        "Duplicated": 0.284958,
+        "Sprint Review": 0.287027,
+        "Closed": 0.204511,
+        "Invalid": 0.223504
     },
     "In Staging": {
-        "Release Candidate": 0.125802,
-        "Paused": 0.274327,
-        "Parked": 0.151718,
-        "Production": 0.290606,
-        "Activity6": 0.157546
+        "Bug Fix": 0.195719,
+        "Invalid": 0.180561,
+        "Ready for Deployment": 0.314614,
+        "Submitted": 0.309106
     },
     "PO Review": {
-        "Hotfix": 0.160238,
-        "Ready for Production": 0.207573,
-        "In Staging": 0.224859,
-        "Under Code Review": 0.125133,
-        "Activity1": 0.115529,
-        "Closed": 0.166667
+        "Code Complete": 0.217808,
+        "Duplicated": 0.110055,
+        "Backlog": 0.18104,
+        "Post-Release": 0.253824,
+        "Feature Complete": 0.237273
     },
     "Pairing": {
-        "Sprint Planning": 0.207569,
-        "Ready for Deployment": 0.358376,
-        "Hotfix": 0.22966,
-        "Activity2": 0.204395
+        "Activity8": 0.366944,
+        "Activity9": 0.287804,
+        "Activity7": 0.345252,
+        "Invalid": 0.05
     },
     "Parked": {
-        "Testing": 0.195242,
-        "Sprint Planning": 0.269854,
-        "Activity8": 0.252696,
-        "Patch": 0.282209
+        "Testing": 0.276269,
+        "Patch": 0.375981,
+        "Activity4": 0.34775,
+        "Merged": 0.05
     },
     "Patch": {
-        "Activity7": 0.245548,
-        "Activity1": 0.255943,
-        "In Staging": 0.165919,
-        "Feature Complete": 0.112464,
-        "Ready for Deployment": 0.220125
+        "QE Review": 0.144549,
+        "PO Review": 0.310526,
+        "Activity2": 0.271951,
+        "Production": 0.150082,
+        "Deferred": 0.122893,
+        "Abandoned": 0.05
     },
     "Paused": {
-        "Parked": 0.195577,
-        "Activity9": 0.179937,
-        "Retrospective": 0.207444,
-        "Bounced": 0.18056,
-        "Activity6": 0.236483
+        "Patch": 0.161999,
+        "Pairing": 0.17279,
+        "Activity4": 0.193726,
+        "Deployment": 0.16645,
+        "Post-Release": 0.305035,
+        "Incorporated": 0.05
     },
     "Post-Release": {
-        "Ready for Deployment": 0.16754,
-        "Under Code Review": 0.302116,
-        "Ready for QA": 0.379857,
-        "UAT": 0.150487
+        "PO Review": 0.174963,
+        "Paused": 0.314383,
+        "QE Review": 0.347893,
+        "Deployment": 0.162761,
+        "Invalid": 0.05
     },
     "Production": {
-        "In Staging": 0.267834,
-        "Paused": 0.23783,
-        "Post-Release": 0.305706,
-        "Under Code Review": 0.18863
+        "Submitted": 0.313496,
+        "Activity8": 0.27427,
+        "Paused": 0.412234,
+        "Invalid": 0.05
     },
     "QE Review": {
-        "Activity1": 0.246709,
-        "Code Review": 0.23481,
-        "Under Code Review": 0.287712,
-        "Closed": 0.230769
+        "Sprint Review": 0.33132,
+        "Feature Complete": 0.27431,
+        "Blocked": 0.136687,
+        "Hotfix": 0.257683,
+        "Closed": 0.05
     },
     "Ready for Deployment": {
-        "Feature Complete": 0.244591,
-        "Hotfix": 0.202097,
-        "Post-Release": 0.153306,
-        "Released": 0.188283,
-        "Ready for Production": 0.211724
+        "Merged": 0.20237,
+        "Ready for Production": 0.347063,
+        "Ready for Work": 0.280345,
+        "Abandoned": 0.170222
     },
     "Ready for Production": {
-        "Activity1": 0.143918,
-        "Retrospective": 0.212732,
-        "Paused": 0.267606,
-        "Sprint Backlog": 0.202071,
-        "Backlog": 0.173673
+        "Testing": 0.225581,
+        "Code Complete": 0.24583,
+        "UAT": 0.242174,
+        "Ready for Work": 0.286415,
+        "Closed": 0.05
     },
     "Ready for QA": {
-        "Deployment": 0.239386,
-        "Release Candidate": 0.206792,
-        "Activity6": 0.254137,
-        "In Progress": 0.140942,
-        "Code Review": 0.158744
+        "Post-Release": 0.284348,
+        "Sprint Review": 0.279685,
+        "Ready for Work": 0.188925,
+        "Under Code Review": 0.247042,
+        "Invalid": 0.05
     },
     "Ready for Work": {
-        "QE Review": 0.276824,
-        "PO Review": 0.359381,
-        "Code Complete": 0.363795
+        "Activity6": 0.166775,
+        "Ready for Merge": 0.129512,
+        "Ready for Deployment": 0.365438,
+        "Invalid": 0.338276
     },
     "Release Candidate": {
-        "Deferred": 0.356225,
-        "In Staging": 0.441578,
-        "Activity8": 0.202197
+        "Activity4": 0.442899,
+        "Activity9": 0.311085,
+        "Activity6": 0.246016,
+        "Closed": 0.05
     },
     "Released": {
-        "Activity2": 0.411285,
-        "Paused": 0.272048,
-        "Ready for QA": 0.316667
+        "Deferred": 0.226965,
+        "PO Review": 0.201265,
+        "Ready for Merge": 0.213399,
+        "Sprint Review": 0.35837,
+        "Invalid": 0.05
     },
     "Retrospective": {
-        "Ready for Merge": 0.386235,
-        "UAT": 0.299804,
-        "Activity6": 0.313961
+        "Bug Fix": 0.197806,
+        "Ready for QA": 0.18556,
+        "Activity3": 0.205162,
+        "Release Candidate": 0.141061,
+        "Backlog": 0.270411,
+        "Invalid": 0.05
     },
     "Sprint Backlog": {
-        "Code Review": 0.302866,
-        "QE Review": 0.326691,
-        "Blocked": 0.370443
+        "Under Code Review": 0.373965,
+        "Activity6": 0.366175,
+        "Paused": 0.25986,
+        "Incorporated": 0.05
     },
     "Sprint Planning": {
-        "PO Review": 0.301553,
-        "Activity8": 0.15886,
-        "Submitted": 0.261414,
-        "Activity6": 0.278173
+        "Code Complete": 0.22691,
+        "Release Candidate": 0.213093,
+        "Code Review": 0.13532,
+        "Activity6": 0.198729,
+        "Activity9": 0.225948,
+        "Merged": 0.05
     },
     "Sprint Review": {
-        "Activity5": 0.260089,
-        "Release Candidate": 0.260007,
-        "Patch": 0.228852,
-        "Activity6": 0.251052
+        "Under Code Review": 0.220168,
+        "Patch": 0.13025,
+        "Retrospective": 0.259702,
+        "Sprint Backlog": 0.109091,
+        "Sprint Planning": 0.280789,
+        "Incorporated": 0.05
     },
     "Testing": {
-        "Activity5": 0.276277,
-        "Bounced": 0.190542,
-        "Activity8": 0.284764,
-        "Code Complete": 0.248417
+        "Under Code Review": 0.353699,
+        "Bounced": 0.382306,
+        "Pairing": 0.13115,
+        "Ready for Deployment": 0.132844,
+        "Closed": 0.05
     },
     "UAT": {
-        "Code Complete": 0.364739,
-        "Activity5": 0.44359,
-        "Ready for Work": 0.19167
+        "PO Review": 0.26333,
+        "Invalid": 0.150582,
+        "Activity4": 0.308606,
+        "Paused": 0.277483
     },
     "Under Code Review": {
-        "Activity2": 0.305087,
-        "Activity1": 0.263651,
-        "Patch": 0.153503,
-        "Activity4": 0.277759
+        "Retrospective": 0.363306,
+        "Activity3": 0.212396,
+        "Activity6": 0.251122,
+        "Ready for Deployment": 0.173176,
+        "Invalid": 0.05
     },
     "ACTOR": {
         "None": 0.2,
