@@ -232,7 +232,8 @@
         ]
     },
     "__initial_events__": {
-        "Submitted": 1
+        "Submitted": 0.5,
+        "Cloned": 0.5
     },
     "__final_events__": {
         "Merged":  0.2,
@@ -263,12 +264,36 @@
         "Abandoned": 0.0216,
         "Invalid": 0.0235
     },
+    "Cloned": {
+        "Submitted": 0.0064,
+        "Cloned": 0,
+        "Deferred": 0.1863,
+        "Backlog": 0.5381,
+        "Bounced": 0,
+        "Blocked": 0.052,
+        "Ready for Work": 0.0431,
+        "In Progress": 0.0127,
+        "Pairing": 0.0304,
+        "Parked": 0.0427,
+        "Paused": 0.0123,
+        "Under Code Review": 0,
+        "Code Complete": 0,
+        "PO Review": 0,
+        "QE Review": 0,
+        "Ready for Merge": 0,
+        "Merged": 0,
+        "Incorporated": 0,
+        "Duplicated": 0.0308,
+        "Abandoned": 0.0216,
+        "Invalid": 0.0235
+    },
     "Deferred": {
         "Submitted": 0.2093,
+        "Cloned": 0.0143,
         "Deferred": 0.1211,
         "Backlog": 0.4043,
         "Bounced": 0,
-        "Blocked": 0.0286,
+        "Blocked": 0.0143,
         "Ready for Work": 0.0485,
         "In Progress": 0,
         "Pairing": 0.0354,
@@ -287,6 +312,7 @@
     },
     "Backlog": {
         "Submitted": 0.0744,
+        "Cloned": 0,
         "Deferred": 0.0393,
         "Backlog": 0.0004,
         "Bounced": 0.0002,
@@ -309,6 +335,7 @@
     },
     "Bounced": {
         "Submitted": 0,
+        "Cloned": 0,
         "Deferred": 0,
         "Backlog": 0,
         "Bounced": 0.0521,
@@ -331,10 +358,11 @@
     },
     "Blocked": {
         "Submitted": 0.0447,
+        "Cloned": 0.0284,
         "Deferred": 0.0915,
         "Backlog": 0.0074,
         "Bounced": 0,
-        "Blocked": 0.0568,
+        "Blocked": 0.0284,
         "Ready for Work": 0.003,
         "In Progress": 0.0002,
         "Pairing": 0.0702,
@@ -353,6 +381,7 @@
     },
     "Ready for Work": {
         "Submitted": 0,
+        "Cloned": 0,
         "Deferred": 0.0328,
         "Backlog": 0.0002,
         "Bounced": 0,
@@ -374,7 +403,8 @@
         "Invalid": 0.0274
     },
     "In Progress": {
-        "Submitted": 0.0564,
+        "Submitted": 0.0282,
+        "Cloned": 0.0282,
         "Deferred": 0.0054,
         "Backlog": 0.0007,
         "Bounced": 0,
@@ -397,6 +427,7 @@
     },
     "Pairing": {
         "Submitted": 0,
+        "Cloned": 0,
         "Deferred": 0,
         "Backlog": 0.0013,
         "Bounced": 0.1416,
@@ -419,6 +450,7 @@
     },
     "Parked": {
         "Submitted": 0.192,
+        "Cloned": 0,
         "Deferred": 0.0433,
         "Backlog": 0.0005,
         "Bounced": 0.0007,
@@ -441,6 +473,7 @@
     },
     "Paused": {
         "Submitted": 0.1847,
+        "Cloned": 0,
         "Deferred": 0.0555,
         "Backlog": 0.0005,
         "Bounced": 0.0698,
@@ -463,6 +496,7 @@
     },
     "Under Code Review": {
         "Submitted": 0,
+        "Cloned": 0,
         "Deferred": 0.0156,
         "Backlog": 0.0002,
         "Bounced": 0.0804,
@@ -485,6 +519,7 @@
     },
     "Code Complete": {
         "Submitted": 0,
+        "Cloned": 0,
         "Deferred": 0,
         "Backlog": 0,
         "Bounced": 0.1022,
@@ -507,6 +542,7 @@
     },
     "PO Review": {
         "Submitted": 0,
+        "Cloned": 0,
         "Deferred": 0,
         "Backlog": 0.0049,
         "Bounced": 0.0307,
@@ -529,6 +565,7 @@
     },
     "QE Review": {
         "Submitted": 0,
+        "Cloned": 0,
         "Deferred": 0,
         "Backlog": 0,
         "Bounced": 0.1947,
@@ -551,6 +588,7 @@
     },
     "Ready for Merge": {
         "Submitted": 0,
+        "Cloned": 0,
         "Deferred": 0,
         "Backlog": 0,
         "Bounced": 0,
@@ -1053,6 +1091,7 @@
     },
     "EVENT_TYPE": {
         "Submitted": 0.05,
+        "Cloned": 0.05,
         "Deferred": 0.05,
         "Backlog": 0.05,
         "Bounced": 0.05,

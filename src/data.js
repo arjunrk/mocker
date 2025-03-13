@@ -8,6 +8,7 @@ const uniqueVariants = new Set();
 const uniqueSequences = new Set();
 const variantsMap = {};
 let variantsCount = 0;
+const variantUsageCount = {}
 
 function generateCases(numCases) {
   const cases = [];
@@ -124,6 +125,8 @@ function generateEvents(cases) {
     console.warn(`WARN: Number of generated sequences (${uniqueSequences.size}) did not reach the specified maximum (${config.MAX_SEQUENCES}).`);
   }
 
+  console.log(variantUsageCount);
+
   return transitions;
 }
 
@@ -195,10 +198,16 @@ function generateEventVariant() {
       variantsMap[variantsCount++] = variant;
     }
 
+    // Track the number of times this variant has been checked
+    variantUsageCount[variantStr] = (variantUsageCount[variantStr] || 0) + 1;
+
     return variant;
   } else {
     // If maximum variants are reached, return a randomly selected pre-generated variant
     const randomIndex = Math.floor(Math.random() * variantsCount);
+    let variant = variantsMap[randomIndex];
+    const randomVariantStr = variant.join("->");
+    variantUsageCount[randomVariantStr] = (variantUsageCount[randomVariantStr] || 0) + 1;
     return variantsMap[randomIndex];
   }
 }
