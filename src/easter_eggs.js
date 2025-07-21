@@ -6,10 +6,13 @@ class EasterEggGenerator {
   constructor() {
     this.patterns = [];
     this.appliedPatterns = [];
+    this.dataAnalysis = {};
+    this.minSampleSize = 5; // Minimum cases needed for a pattern to be statistically meaningful
   }
 
-  // Define possible easter egg patterns
+  // Define possible easter egg patterns - easily extensible
   initializePatterns() {
+    // Core patterns - always available
     this.patterns = [
       {
         name: "team_bottleneck",
@@ -84,62 +87,530 @@ class EasterEggGenerator {
         apply: (cases, events) => this.applyHandoffBottleneck(cases, events)
       }
     ];
+
+    // Add custom patterns if available
+    this.addCustomPatterns();
   }
 
-  // Randomly select which patterns to apply this run
-  selectPatternsForRun() {
+  // Extensible system for adding custom patterns
+  addCustomPatterns() {
+    // Check for custom pattern definitions in config or external files
+    const customPatterns = this.loadCustomPatterns();
+
+    if (customPatterns && customPatterns.length > 0) {
+      console.log(`   📦 Loading ${customPatterns.length} custom pattern(s)`);
+      this.patterns.push(...customPatterns);
+    }
+  }
+
+  // Load custom patterns from configuration or external files
+  loadCustomPatterns() {
+    // This could load from:
+    // 1. Configuration files
+    // 2. External pattern libraries
+    // 3. User-defined pattern files
+    // 4. Database of patterns
+
+    const customPatterns = [];
+
+    // Example: Time-based patterns that change based on current date/season
+    if (new Date().getMonth() === 11) { // December
+      customPatterns.push({
+        name: "holiday_slowdown",
+        description: "December cases experience delays due to holiday schedules",
+        probability: 0.4,
+        apply: (cases, events) => this.applyHolidaySlowdown(cases, events)
+      });
+    }
+
+    // Example: Workload-based patterns that adapt to dataset size
+    if (config.NUMBER_OF_CASES > 100000) {
+      customPatterns.push({
+        name: "scale_bottleneck",
+        description: "Large datasets experience different bottleneck patterns",
+        probability: 0.3,
+        apply: (cases, events) => this.applyScaleBottleneck(cases, events)
+      });
+    }
+
+    return customPatterns;
+  }
+
+  // Analyze the generated data to understand what patterns are feasible
+  // Optimized for large datasets with streaming analysis
+  analyzeData(cases, events) {
+    try {
+      console.log(`\n📊 Analyzing ${cases.length} cases and ${events.length} events...`);
+
+      this.dataAnalysis = {
+        totalCases: cases.length,
+        totalEvents: events.length,
+
+        // Use streaming analysis for large datasets
+        teams: this.analyzeAttributeStreaming(cases, 'Team'),
+        assignees: this.analyzeAttributeStreaming(cases, 'Assignee'),
+        priorities: this.analyzeAttributeStreaming(cases, 'Priority'),
+        components: this.analyzeAttributeStreaming(cases, 'Component'),
+        sprints: this.analyzeAttributeStreaming(cases, 'Sprint'),
+        customerImpacts: this.analyzeAttributeStreaming(cases, 'CustomerImpact'),
+        customerEnvironments: this.analyzeAttributeStreaming(cases, 'CustomerEnvironment'),
+        incidents: this.analyzeAttributeStreaming(cases, 'Incident'),
+        types: this.analyzeAttributeStreaming(cases, 'Type'),
+        storyPoints: this.analyzeStoryPointsStreaming(cases),
+
+        // Analyze event patterns with streaming
+        actors: this.analyzeAttributeStreaming(events, 'Actor'),
+        eventTypes: this.analyzeAttributeStreaming(events, 'EventType'),
+
+        // Analyze temporal patterns with sampling for large datasets
+        submissionDays: this.analyzeSubmissionDaysStreaming(events),
+        seasonalDistribution: this.analyzeSeasonalDistributionStreaming(events)
+      };
+
+      console.log(`   ✅ Analysis complete - Cases: ${this.dataAnalysis.totalCases}, Events: ${this.dataAnalysis.totalEvents}`);
+      console.log(`   📈 Teams: ${this.dataAnalysis.teams.uniqueCount}, Assignees: ${this.dataAnalysis.assignees.uniqueCount}`);
+
+      // Force garbage collection if available
+      if (global.gc) {
+        global.gc();
+      }
+    } catch (error) {
+      console.error(`❌ Error during data analysis: ${error.message}`);
+      this.dataAnalysis = { totalCases: cases.length, totalEvents: events.length };
+    }
+  }
+
+  // Memory-optimized streaming analysis for large datasets
+  analyzeAttributeStreaming(data, attribute) {
+    const distribution = {};
+    let totalWithValue = 0;
+
+    // Stream through data without creating intermediate arrays
+    for (let i = 0; i < data.length; i++) {
+      const value = data[i][attribute];
+      if (value && value !== '') {
+        distribution[value] = (distribution[value] || 0) + 1;
+        totalWithValue++;
+      }
+
+      // Periodic garbage collection hint for very large datasets
+      if (i % 100000 === 0 && global.gc) {
+        global.gc();
+      }
+    }
+
+    const uniqueValues = Object.keys(distribution);
+    if (uniqueValues.length === 0) {
+      return {
+        uniqueCount: 0,
+        totalWithValue: 0,
+        distribution: {},
+        mostCommon: null,
+        leastCommon: null,
+        largestGroup: 0,
+        smallestGroup: 0,
+        values: []
+      };
+    }
+
+    const sortedByCount = uniqueValues.sort((a, b) => distribution[b] - distribution[a]);
+
+    return {
+      uniqueCount: uniqueValues.length,
+      totalWithValue,
+      distribution,
+      mostCommon: sortedByCount[0],
+      leastCommon: sortedByCount[sortedByCount.length - 1],
+      largestGroup: distribution[sortedByCount[0]] || 0,
+      smallestGroup: distribution[sortedByCount[sortedByCount.length - 1]] || 0,
+      values: uniqueValues
+    };
+  }
+
+  // Fallback to original method for smaller datasets
+  analyzeAttribute(data, attribute) {
+    if (data.length > 100000) {
+      return this.analyzeAttributeStreaming(data, attribute);
+    }
+
+    const values = data.map(item => item[attribute]).filter(v => v && v !== '');
+    const distribution = {};
+
+    values.forEach(value => {
+      distribution[value] = (distribution[value] || 0) + 1;
+    });
+
+    const uniqueValues = Object.keys(distribution);
+    const sortedByCount = uniqueValues.sort((a, b) => distribution[b] - distribution[a]);
+
+    return {
+      uniqueCount: uniqueValues.length,
+      totalWithValue: values.length,
+      distribution,
+      mostCommon: sortedByCount[0],
+      leastCommon: sortedByCount[sortedByCount.length - 1],
+      largestGroup: distribution[sortedByCount[0]] || 0,
+      smallestGroup: distribution[sortedByCount[sortedByCount.length - 1]] || 0,
+      values: uniqueValues
+    };
+  }
+
+  // Analyze story points distribution
+  analyzeStoryPoints(cases) {
+    const storyPoints = cases
+      .map(c => c.StoryPoints)
+      .filter(sp => sp && !isNaN(parseInt(sp)))
+      .map(sp => parseInt(sp));
+
+    const highStoryPoints = storyPoints.filter(sp => sp >= 8);
+
+    return {
+      total: storyPoints.length,
+      highStoryPointsCount: highStoryPoints.length,
+      hasHighStoryPoints: highStoryPoints.length >= this.minSampleSize,
+      average: storyPoints.length > 0 ? storyPoints.reduce((a, b) => a + b, 0) / storyPoints.length : 0
+    };
+  }
+
+  // Analyze submission day patterns
+  analyzeSubmissionDays(events) {
+    const submissionEvents = events.filter(e => e.EventType === 'Submitted');
+    const dayDistribution = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }; // Sun-Sat
+
+    submissionEvents.forEach(event => {
+      const day = new Date(event.Date).getDay();
+      dayDistribution[day]++;
+    });
+
+    return {
+      total: submissionEvents.length,
+      fridaySubmissions: dayDistribution[5],
+      hasFridaySubmissions: dayDistribution[5] >= this.minSampleSize,
+      distribution: dayDistribution
+    };
+  }
+
+  // Analyze seasonal distribution
+  analyzeSeasonalDistribution(events) {
+    const submissionEvents = events.filter(e => e.EventType === 'Submitted');
+    const seasonalMonths = [11, 0, 1]; // Nov, Dec, Jan
+    let seasonalCount = 0;
+
+    submissionEvents.forEach(event => {
+      const month = new Date(event.Date).getMonth();
+      if (seasonalMonths.includes(month)) {
+        seasonalCount++;
+      }
+    });
+
+    return {
+      total: submissionEvents.length,
+      seasonalSubmissions: seasonalCount,
+      hasSeasonalSubmissions: seasonalCount >= this.minSampleSize
+    };
+  }
+
+  // Intelligently select patterns based on data analysis
+  selectPatternsForRun(cases, events) {
+    this.analyzeData(cases, events);
     this.appliedPatterns = [];
-    
+    const feasiblePatterns = [];
+
+    // Check each pattern for feasibility
     for (const pattern of this.patterns) {
-      if (Math.random() < pattern.probability) {
+      const feasibility = this.checkPatternFeasibility(pattern.name);
+      if (feasibility.feasible) {
+        feasiblePatterns.push({
+          ...pattern,
+          feasibilityScore: feasibility.score,
+          reason: feasibility.reason
+        });
+      } else {
+        console.log(`   ⚠️  Skipping ${pattern.name}: ${feasibility.reason}`);
+      }
+    }
+
+    if (feasiblePatterns.length === 0) {
+      console.log(`   ❌ No patterns are feasible with current data distribution`);
+      return;
+    }
+
+    // Select patterns based on probability and feasibility
+    for (const pattern of feasiblePatterns) {
+      // Adjust probability based on feasibility score
+      const adjustedProbability = pattern.probability * pattern.feasibilityScore;
+      if (Math.random() < adjustedProbability) {
         this.appliedPatterns.push(pattern);
       }
     }
 
-    // Ensure at least one pattern is always applied
-    if (this.appliedPatterns.length === 0) {
-      const randomPattern = this.patterns[Math.floor(Math.random() * this.patterns.length)];
-      this.appliedPatterns.push(randomPattern);
+    // Ensure at least one pattern is applied if feasible patterns exist
+    if (this.appliedPatterns.length === 0 && feasiblePatterns.length > 0) {
+      // Pick the most feasible pattern
+      const bestPattern = feasiblePatterns.sort((a, b) => b.feasibilityScore - a.feasibilityScore)[0];
+      this.appliedPatterns.push(bestPattern);
+    }
+
+    console.log(`   ✅ Selected ${this.appliedPatterns.length} feasible pattern(s)`);
+  }
+
+  // Check if a pattern is feasible with current data
+  checkPatternFeasibility(patternName) {
+    switch (patternName) {
+      case 'team_bottleneck':
+        if (this.dataAnalysis.teams.uniqueCount < 2) {
+          return { feasible: false, reason: 'Need at least 2 teams' };
+        }
+        if (this.dataAnalysis.teams.smallestGroup < this.minSampleSize) {
+          return { feasible: false, reason: `Smallest team has only ${this.dataAnalysis.teams.smallestGroup} cases (need ${this.minSampleSize})` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, this.dataAnalysis.teams.smallestGroup / (this.minSampleSize * 2)),
+          reason: `${this.dataAnalysis.teams.uniqueCount} teams available`
+        };
+
+      case 'priority_fast_track':
+        const highPriorityCases = (this.dataAnalysis.priorities.distribution['High'] || 0) +
+          (this.dataAnalysis.priorities.distribution['Critical'] || 0);
+        if (highPriorityCases < this.minSampleSize) {
+          return { feasible: false, reason: `Only ${highPriorityCases} high priority cases (need ${this.minSampleSize})` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, highPriorityCases / (this.minSampleSize * 3)),
+          reason: `${highPriorityCases} high priority cases available`
+        };
+
+      case 'assignee_efficiency':
+        if (this.dataAnalysis.assignees.uniqueCount < 3) {
+          return { feasible: false, reason: 'Need at least 3 assignees' };
+        }
+        if (this.dataAnalysis.assignees.smallestGroup < this.minSampleSize) {
+          return { feasible: false, reason: `Smallest assignee group has only ${this.dataAnalysis.assignees.smallestGroup} cases` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, this.dataAnalysis.assignees.smallestGroup / (this.minSampleSize * 2)),
+          reason: `${this.dataAnalysis.assignees.uniqueCount} assignees available`
+        };
+
+      case 'component_complexity':
+        if (this.dataAnalysis.components.uniqueCount < 2) {
+          return { feasible: false, reason: 'Need at least 2 components' };
+        }
+        if (this.dataAnalysis.components.smallestGroup < this.minSampleSize) {
+          return { feasible: false, reason: `Smallest component group has only ${this.dataAnalysis.components.smallestGroup} cases` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, this.dataAnalysis.components.smallestGroup / (this.minSampleSize * 2)),
+          reason: `${this.dataAnalysis.components.uniqueCount} components available`
+        };
+
+      case 'friday_effect':
+        if (!this.dataAnalysis.submissionDays.hasFridaySubmissions) {
+          return { feasible: false, reason: `Only ${this.dataAnalysis.submissionDays.fridaySubmissions} Friday submissions (need ${this.minSampleSize})` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, this.dataAnalysis.submissionDays.fridaySubmissions / (this.minSampleSize * 2)),
+          reason: `${this.dataAnalysis.submissionDays.fridaySubmissions} Friday submissions available`
+        };
+
+      case 'story_points_correlation':
+        if (!this.dataAnalysis.storyPoints.hasHighStoryPoints) {
+          return { feasible: false, reason: `Only ${this.dataAnalysis.storyPoints.highStoryPointsCount} high story point cases (need ${this.minSampleSize})` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, this.dataAnalysis.storyPoints.highStoryPointsCount / (this.minSampleSize * 2)),
+          reason: `${this.dataAnalysis.storyPoints.highStoryPointsCount} high story point cases available`
+        };
+
+      case 'customer_impact_escalation':
+        const highImpactCases = (this.dataAnalysis.customerImpacts.distribution['High'] || 0) +
+          (this.dataAnalysis.customerImpacts.distribution['Critical'] || 0);
+        if (highImpactCases < this.minSampleSize) {
+          return { feasible: false, reason: `Only ${highImpactCases} high customer impact cases (need ${this.minSampleSize})` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, highImpactCases / (this.minSampleSize * 2)),
+          reason: `${highImpactCases} high customer impact cases available`
+        };
+
+      case 'sprint_boundary_delay':
+        if (this.dataAnalysis.sprints.uniqueCount === 0) {
+          return { feasible: false, reason: 'No sprint information available' };
+        }
+        if (this.dataAnalysis.sprints.smallestGroup < this.minSampleSize) {
+          return { feasible: false, reason: `Smallest sprint has only ${this.dataAnalysis.sprints.smallestGroup} cases` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, this.dataAnalysis.sprints.smallestGroup / (this.minSampleSize * 2)),
+          reason: `${this.dataAnalysis.sprints.uniqueCount} sprints available`
+        };
+
+      case 'incident_correlation':
+        const incidentCases = (this.dataAnalysis.incidents.distribution['Yes'] || 0) +
+          (this.dataAnalysis.types.distribution['Incident'] || 0);
+        if (incidentCases < this.minSampleSize) {
+          return { feasible: false, reason: `Only ${incidentCases} incident cases (need ${this.minSampleSize})` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, incidentCases / (this.minSampleSize * 2)),
+          reason: `${incidentCases} incident cases available`
+        };
+
+      case 'environment_dependency':
+        const prodCases = (this.dataAnalysis.customerEnvironments.distribution['Production'] || 0) +
+          (this.dataAnalysis.customerEnvironments.distribution['Prod'] || 0);
+        if (prodCases < this.minSampleSize) {
+          return { feasible: false, reason: `Only ${prodCases} production cases (need ${this.minSampleSize})` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, prodCases / (this.minSampleSize * 2)),
+          reason: `${prodCases} production cases available`
+        };
+
+      case 'seasonal_workload':
+        if (!this.dataAnalysis.seasonalDistribution.hasSeasonalSubmissions) {
+          return { feasible: false, reason: `Only ${this.dataAnalysis.seasonalDistribution.seasonalSubmissions} seasonal submissions (need ${this.minSampleSize})` };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, this.dataAnalysis.seasonalDistribution.seasonalSubmissions / (this.minSampleSize * 2)),
+          reason: `${this.dataAnalysis.seasonalDistribution.seasonalSubmissions} seasonal submissions available`
+        };
+
+      case 'handoff_bottleneck':
+        if (this.dataAnalysis.actors.uniqueCount < 3) {
+          return { feasible: false, reason: 'Need at least 3 actors' };
+        }
+        return {
+          feasible: true,
+          score: Math.min(1.0, this.dataAnalysis.actors.uniqueCount / 10),
+          reason: `${this.dataAnalysis.actors.uniqueCount} actors available`
+        };
+
+      default:
+        return { feasible: false, reason: 'Unknown pattern' };
     }
   }
 
-  // Apply all selected patterns to the data
+  // Utility method to randomly sample patterns for variety
+  randomSample(array, sampleSize) {
+    const shuffled = [...array].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, sampleSize);
+  }
+
+  // Apply all selected patterns to the data - optimized for large datasets
   applyPatterns(cases, events) {
-    console.log(`\nApplying ${this.appliedPatterns.length} easter egg pattern(s)...`);
-    
-    for (const pattern of this.appliedPatterns) {
+    if (this.appliedPatterns.length === 0) {
+      console.log(`\n❌ No easter egg patterns applied - insufficient data diversity`);
+      return;
+    }
+
+    // Cap the number of applied patterns to 5 for optimal performance
+    const maxPatterns = 5;
+
+    // Randomly sample patterns to ensure variety (not just first 5)
+    const patternsToApply = this.appliedPatterns.length <= maxPatterns
+      ? this.appliedPatterns
+      : this.randomSample(this.appliedPatterns, maxPatterns);
+
+    console.log(`\n🎯 Applying ${patternsToApply.length} data-validated easter egg pattern(s)...`);
+
+    if (this.appliedPatterns.length > maxPatterns) {
+      console.log(`   🎯 Selected top ${maxPatterns} patterns from ${this.appliedPatterns.length} feasible options for optimal performance`);
+    }
+
+    if (cases.length > 1000000) {
+      console.log(`   ⚡ Large dataset (${cases.length} cases) - applying ${patternsToApply.length} patterns with memory optimization`);
+    }
+
+    for (const pattern of patternsToApply) {
+      console.log(`   🥚 Applying: ${pattern.name} (feasibility: ${(pattern.feasibilityScore * 100).toFixed(0)}%)`);
+
+      // Force garbage collection before each pattern for large datasets
+      if (cases.length > 500000 && global.gc) {
+        global.gc();
+      }
+
       pattern.apply(cases, events);
     }
+
+    // Final garbage collection
+    if (cases.length > 500000 && global.gc) {
+      global.gc();
+    }
   }
 
-  // Pattern 1: Team Bottleneck
+  // Pattern 1: Team Bottleneck - Optimized for large datasets
   applyTeamBottleneck(cases, events) {
-    const teams = [...new Set(cases.map(c => c.Team).filter(t => t))];
-    if (teams.length < 2) return;
+    // Select team with sufficient cases for statistical significance
+    const teamCounts = this.dataAnalysis.teams.distribution;
+    const eligibleTeams = Object.keys(teamCounts).filter(team => teamCounts[team] >= this.minSampleSize);
 
-    const bottleneckTeam = faker.helpers.arrayElement(teams);
+    if (eligibleTeams.length === 0) return;
+
+    // Prefer teams with moderate size (not too small, not too large) for better contrast
+    const bottleneckTeam = eligibleTeams.sort((a, b) => {
+      const aSize = teamCounts[a];
+      const bSize = teamCounts[b];
+      const idealSize = Math.floor(this.dataAnalysis.totalCases / this.dataAnalysis.teams.uniqueCount);
+      return Math.abs(aSize - idealSize) - Math.abs(bSize - idealSize);
+    })[0];
+
+    const affectedCaseCount = teamCounts[bottleneckTeam];
     const delayMultiplier = faker.number.float({ min: 2.0, max: 4.0 });
 
-    // Add extra delays to events for this team's cases
-    const teamCaseIds = cases.filter(c => c.Team === bottleneckTeam).map(c => c._id);
-    
-    events.forEach(event => {
-      if (teamCaseIds.includes(event.TicketId)) {
-        const currentDate = new Date(event.Date);
+    // Memory-efficient: Create Set of team case IDs for O(1) lookup
+    const teamCaseIds = new Set();
+    for (let i = 0; i < cases.length; i++) {
+      if (cases[i].Team === bottleneckTeam) {
+        teamCaseIds.add(cases[i]._id);
+      }
+    }
+
+    let eventsModified = 0;
+
+    // Stream through events without creating intermediate arrays
+    for (let i = 0; i < events.length; i++) {
+      if (teamCaseIds.has(events[i].TicketId)) {
+        const currentDate = new Date(events[i].Date);
         const extraDays = Math.floor(faker.number.int({ min: 1, max: 5 }) * delayMultiplier);
         currentDate.setDate(currentDate.getDate() + extraDays);
-        event.Date = currentDate.toISOString().replace('T', ' ').substring(0, 23);
+        events[i].Date = currentDate.toISOString().replace('T', ' ').substring(0, 23);
+        eventsModified++;
       }
-    });
+
+      // Periodic garbage collection for very large datasets
+      if (i % 100000 === 0 && global.gc) {
+        global.gc();
+      }
+    }
 
     this.addFinding({
       pattern: "Team Performance Bottleneck",
-      description: `Team "${bottleneckTeam}" has cases that take ${delayMultiplier.toFixed(1)}x longer than average due to systematic delays. This team should show up as a bottleneck in process mining analysis.`,
+      description: `Team "${bottleneckTeam}" (${affectedCaseCount} cases, ${eventsModified} events) experiences ${delayMultiplier.toFixed(1)}x longer processing times due to systematic delays. This represents ${(affectedCaseCount / this.dataAnalysis.totalCases * 100).toFixed(1)}% of all cases.`,
       expectedFindings: [
         `Cases assigned to team "${bottleneckTeam}" have significantly longer cycle times`,
         `Average case duration for "${bottleneckTeam}" is ${delayMultiplier.toFixed(1)} times higher than other teams`,
-        `Process mining should identify "${bottleneckTeam}" as a resource bottleneck`
-      ]
+        `Process mining should identify "${bottleneckTeam}" as a resource bottleneck`,
+        `Statistical significance: ${affectedCaseCount} cases affected (${(affectedCaseCount / this.dataAnalysis.totalCases * 100).toFixed(1)}% of dataset)`
+      ],
+      actualData: {
+        affectedTeam: bottleneckTeam,
+        affectedCases: affectedCaseCount,
+        totalTeams: this.dataAnalysis.teams.uniqueCount,
+        delayMultiplier: delayMultiplier,
+        eventsModified: eventsModified
+      }
     });
   }
 
@@ -224,11 +695,11 @@ class EasterEggGenerator {
       if (Math.random() < 0.6) { // 60% of complex cases get extra bounces
         const bounceCount = faker.number.int({ min: 1, max: 3 });
         const caseEvents = events.filter(e => e.TicketId === caseId).sort((a, b) => new Date(a.Date) - new Date(b.Date));
-        
+
         if (caseEvents.length > 2) {
           const insertPoint = Math.floor(caseEvents.length / 2);
           const baseDate = new Date(caseEvents[insertPoint].Date);
-          
+
           for (let i = 0; i < bounceCount; i++) {
             const bounceEvent = {
               ...caseEvents[insertPoint],
@@ -264,8 +735,8 @@ class EasterEggGenerator {
       const eventDate = new Date(event.Date);
       if (eventDate.getDay() === 5 && event.EventType === 'Submitted') { // Friday
         // Find the next event for this case and delay it
-        const nextEvents = events.filter(e => 
-          e.TicketId === event.TicketId && 
+        const nextEvents = events.filter(e =>
+          e.TicketId === event.TicketId &&
           new Date(e.Date) > eventDate
         ).sort((a, b) => new Date(a.Date) - new Date(b.Date));
 
@@ -294,7 +765,7 @@ class EasterEggGenerator {
 
   // Pattern 6: Story Points Correlation
   applyStoryPointsCorrelation(cases, events) {
-    const highStoryPointCases = cases.filter(c => 
+    const highStoryPointCases = cases.filter(c =>
       c.StoryPoints && parseInt(c.StoryPoints) >= 8
     ).map(c => c._id);
 
@@ -308,11 +779,11 @@ class EasterEggGenerator {
       if (Math.random() < 0.8) { // 80% of high story point cases
         const caseEvents = events.filter(e => e.TicketId === caseId).sort((a, b) => new Date(a.Date) - new Date(b.Date));
         const extraReviews = faker.number.int({ min: 1, max: 2 });
-        
+
         if (caseEvents.length > 3) {
           const insertPoint = Math.floor(caseEvents.length * 0.7);
           const baseDate = new Date(caseEvents[insertPoint].Date);
-          
+
           for (let i = 0; i < extraReviews; i++) {
             const reviewEvent = {
               ...caseEvents[insertPoint],
@@ -343,7 +814,7 @@ class EasterEggGenerator {
 
   // Pattern 7: Customer Impact Escalation
   applyCustomerImpactEscalation(cases, events) {
-    const highImpactCases = cases.filter(c => 
+    const highImpactCases = cases.filter(c =>
       c.CustomerImpact === 'High' || c.CustomerImpact === 'Critical'
     ).map(c => c._id);
 
@@ -396,8 +867,8 @@ class EasterEggGenerator {
 
     // Add delays to cases near sprint boundaries (simulate sprint planning overhead)
     events.forEach(event => {
-      if (sprintCaseIds.includes(event.TicketId) && 
-          ['Ready for Work', 'In Progress', 'Sprint Planning'].includes(event.EventType)) {
+      if (sprintCaseIds.includes(event.TicketId) &&
+        ['Ready for Work', 'In Progress', 'Sprint Planning'].includes(event.EventType)) {
         const currentDate = new Date(event.Date);
         const sprintDelay = faker.number.int({ min: 2, max: 5 });
         currentDate.setDate(currentDate.getDate() + sprintDelay);
@@ -419,7 +890,7 @@ class EasterEggGenerator {
 
   // Pattern 9: Incident Correlation
   applyIncidentCorrelation(cases, events) {
-    const incidentCases = cases.filter(c => 
+    const incidentCases = cases.filter(c =>
       c.Incident === 'Yes' || c.Type === 'Incident'
     ).map(c => c._id);
 
@@ -432,11 +903,11 @@ class EasterEggGenerator {
     incidentCases.forEach(caseId => {
       if (Math.random() < 0.7) { // 70% of incidents get urgent workflow
         const caseEvents = events.filter(e => e.TicketId === caseId).sort((a, b) => new Date(a.Date) - new Date(b.Date));
-        
+
         if (caseEvents.length > 1) {
           const insertPoint = Math.floor(caseEvents.length * 0.8);
           const baseDate = new Date(caseEvents[insertPoint].Date);
-          
+
           const urgentEvent = {
             ...caseEvents[insertPoint],
             ID: events.length + newEvents.length + 1,
@@ -465,7 +936,7 @@ class EasterEggGenerator {
 
   // Pattern 10: Environment Dependency
   applyEnvironmentDependency(cases, events) {
-    const prodCases = cases.filter(c => 
+    const prodCases = cases.filter(c =>
       c.CustomerEnvironment === 'Production' || c.CustomerEnvironment === 'Prod'
     ).map(c => c._id);
 
@@ -479,11 +950,11 @@ class EasterEggGenerator {
       if (Math.random() < 0.9) { // 90% of prod cases need extra approvals
         const caseEvents = events.filter(e => e.TicketId === caseId).sort((a, b) => new Date(a.Date) - new Date(b.Date));
         const extraApprovals = faker.number.int({ min: 1, max: 2 });
-        
+
         if (caseEvents.length > 2) {
           const insertPoint = Math.floor(caseEvents.length * 0.6);
           const baseDate = new Date(caseEvents[insertPoint].Date);
-          
+
           for (let i = 0; i < extraApprovals; i++) {
             const approvalEvent = {
               ...caseEvents[insertPoint],
@@ -592,7 +1063,183 @@ class EasterEggGenerator {
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const content = this.generateEasterEggsContent();
-    
+
+    await writeFile(`out/easter_eggs/hidden_patterns_${timestamp}.txt`, content);
+    console.log(`\n🥚 Easter eggs documented in: out/easter_eggs/hidden_patterns_${timestamp}.txt`);
+  }
+
+  generateEasterEggsContent() {
+    let content = `HIDDEN PATTERNS IN GENERATED DATA
+Generated on: ${new Date().toISOString()}
+Dataset size: ${config.NUMBER_OF_CASES} cases
+
+This file documents the intentional patterns injected into the mock data for testing your process mining engine.
+Your process mining tool should be able to detect these patterns automatically.
+
+===========================================
+SUMMARY OF INJECTED PATTERNS
+===========================================
+
+`;
+
+    this.findings.forEach((finding, index) => {
+      content += `${index + 1}. ${finding.pattern}\n`;
+      content += `   ${finding.description}\n\n`;
+    });
+
+    content += `
+===========================================
+DETAILED EXPECTED FINDINGS
+===========================================
+
+`;
+
+    this.findings.forEach((finding, index) => {
+      content += `PATTERN ${index + 1}: ${finding.pattern.toUpperCase()}\n`;
+      content += `${'='.repeat(finding.pattern.length + 12)}\n\n`;
+      content += `Description: ${finding.description}\n\n`;
+      content += `Your process mining engine should detect:\n`;
+      finding.expectedFindings.forEach(expected => {
+        content += `  • ${expected}\n`;
+      });
+      content += `\n`;
+    });
+
+    content += `
+===========================================
+TESTING CHECKLIST
+===========================================
+
+Use this checklist to verify your process mining engine:
+
+`;
+
+    this.findings.forEach((finding, index) => {
+      content += `□ Pattern ${index + 1} (${finding.pattern}):\n`;
+      finding.expectedFindings.forEach(expected => {
+        content += `  □ ${expected}\n`;
+      });
+      content += `\n`;
+    });
+
+    content += `
+===========================================
+NOTES FOR TESTING
+===========================================
+
+1. These patterns are randomly selected each run - not all patterns appear in every dataset
+2. Pattern strength varies (multipliers, probabilities) to test sensitivity
+3. Some patterns may interact with each other, creating compound effects
+4. If your process mining tool misses these patterns, investigate:
+   - Data preprocessing steps
+   - Statistical significance thresholds
+   - Filtering criteria
+   - Analysis time windows
+
+Happy process mining! 🔍
+`;
+
+    return content;
+  }
+
+  // Memory-optimized streaming analysis methods for large datasets
+  analyzeStoryPointsStreaming(cases) {
+    let total = 0;
+    let highStoryPointsCount = 0;
+    let sum = 0;
+
+    for (let i = 0; i < cases.length; i++) {
+      const sp = cases[i].StoryPoints;
+      if (sp && !isNaN(parseInt(sp))) {
+        const points = parseInt(sp);
+        total++;
+        sum += points;
+        if (points >= 8) {
+          highStoryPointsCount++;
+        }
+      }
+
+      // Periodic garbage collection for very large datasets
+      if (i % 100000 === 0 && global.gc) {
+        global.gc();
+      }
+    }
+
+    return {
+      total,
+      highStoryPointsCount,
+      hasHighStoryPoints: highStoryPointsCount >= this.minSampleSize,
+      average: total > 0 ? sum / total : 0
+    };
+  }
+
+  analyzeSubmissionDaysStreaming(events) {
+    const dayDistribution = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+    let total = 0;
+
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+      if (event.EventType === 'Submitted') {
+        const day = new Date(event.Date).getDay();
+        dayDistribution[day]++;
+        total++;
+      }
+
+      // Periodic garbage collection for very large datasets
+      if (i % 100000 === 0 && global.gc) {
+        global.gc();
+      }
+    }
+
+    return {
+      total,
+      fridaySubmissions: dayDistribution[5],
+      hasFridaySubmissions: dayDistribution[5] >= this.minSampleSize,
+      distribution: dayDistribution
+    };
+  }
+
+  analyzeSeasonalDistributionStreaming(events) {
+    const seasonalMonths = [11, 0, 1]; // Nov, Dec, Jan
+    let seasonalCount = 0;
+    let total = 0;
+
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+      if (event.EventType === 'Submitted') {
+        total++;
+        const month = new Date(event.Date).getMonth();
+        if (seasonalMonths.includes(month)) {
+          seasonalCount++;
+        }
+      }
+
+      // Periodic garbage collection for very large datasets
+      if (i % 100000 === 0 && global.gc) {
+        global.gc();
+      }
+    }
+
+    return {
+      total,
+      seasonalSubmissions: seasonalCount,
+      hasSeasonalSubmissions: seasonalCount >= this.minSampleSize
+    };
+  }
+
+  // Helper to store findings
+  addFinding(finding) {
+    if (!this.findings) this.findings = [];
+    this.findings.push(finding);
+  }
+
+  // Generate the easter eggs documentation file
+  async generateEasterEggsFile() {
+    if (!this.findings || this.findings.length === 0) return;
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const content = this.generateEasterEggsContent();
+
     await writeFile(`out/easter_eggs/hidden_patterns_${timestamp}.txt`, content);
     console.log(`\n🥚 Easter eggs documented in: out/easter_eggs/hidden_patterns_${timestamp}.txt`);
   }

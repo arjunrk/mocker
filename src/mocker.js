@@ -18,7 +18,7 @@ async function main() {
   if (config.ENABLE_EASTER_EGGS) {
     const easterEggGenerator = new EasterEggGenerator();
     easterEggGenerator.initializePatterns();
-    easterEggGenerator.selectPatternsForRun();
+    easterEggGenerator.selectPatternsForRun(cases, events);
     easterEggGenerator.applyPatterns(cases, events);
     await easterEggGenerator.generateEasterEggsFile();
   }
