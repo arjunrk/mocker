@@ -3,6 +3,7 @@ const { processVocabulary } = require('./vocabulary');
 const { generateCases, generateEvents } = require('./data');
 const { saveToCSV, writeFile, deleteFile } = require('./output');
 const { generateSchemaSql, generateSqlInsert } = require('./sql_generator');
+const { EasterEggGenerator } = require('./easter_egg');
 const util = require('./util');
 const pluralize = require('pluralize');
 
@@ -12,6 +13,15 @@ async function main() {
 
   const cases = generateCases(config.NUMBER_OF_CASES);
   const events = generateEvents(cases);
+
+  // Apply easter egg patterns if enabled
+  if (config.ENABLE_EASTER_EGGS) {
+    const easterEggGenerator = new EasterEggGenerator();
+    easterEggGenerator.initializePatterns();
+    easterEggGenerator.selectPatternsForRun(cases, events);
+    easterEggGenerator.applyPatterns(cases, events);
+    await easterEggGenerator.generateEasterEggsFile();
+  }
 
   if (config.SHOW_PROGRESS) {
     process.stdout.write('Writing data to file...');
