@@ -22,7 +22,7 @@ const config = {
   MAX_VARIANTS: -1,
   MAX_SEQUENCES: -1,
   SHOW_SUMMARY: true,
-  ENABLE_EASTER_EGGS: true
+  ENABLE_EASTER_EGGS: false
 };
 
 const ArgumentTypes = {
@@ -82,7 +82,7 @@ const configDefinitions = [
   new ConfigDefinition("MAX_VARIANTS", "-maxvariants", ArgumentTypes.FLOAT, "Maximum number of unique variants."),
   new ConfigDefinition("MAX_SEQUENCES", "-maxsequences", ArgumentTypes.FLOAT, "Maximum number of unique event sequences."),
   new ConfigDefinition("SHOW_SUMMARY", "-summary", ArgumentTypes.BOOLEAN, "Display data summary on the console."),
-  new ConfigDefinition("ENABLE_EASTER_EGGS", "-eastereggs", ArgumentTypes.BOOLEAN, "Enable/Disable easter egg patterns for process mining testing."),
+  new ConfigDefinition("ENABLE_EASTER_EGGS", "-eastereggs", ArgumentTypes.BOOLEAN, "Enable/Disable easter egg patterns."),
 ]
 
 function loadAndSetUserConfigurations() {
